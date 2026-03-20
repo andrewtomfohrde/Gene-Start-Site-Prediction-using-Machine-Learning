@@ -1,0 +1,64 @@
+RESULTS SUMMARY
+
+Human Genome Experiments
+------------------------
+
+Dataset: Human RefSeq (protein-coding gene start sites)
+Window size: 300 bp
+Balanced dataset created using positive annotated starts and sampled negatives.
+
+Logistic Regression (one-hot encoding)
+- Training Accuracy: 60.5%
+- Test Accuracy: 56.5%
+- Interpretation: Weak linear separability of start-site signals.
+
+Random Forest (k-mer features)
+- Test Accuracy: 60.4%
+- Stronger performance due to ability to capture non-linear sequence patterns.
+
+XGBoost (k-mer features)
+- Test Accuracy: 58.8%
+- Performance similar to Random Forest, suggesting feature representation plays a major role.
+
+Multilayer Perceptron
+- One-hot Accuracy: 54.6%
+- k-mer Accuracy: 57.5%
+- Increased model complexity did not significantly improve performance.
+
+1D Convolutional Neural Network
+- Test Accuracy: 57.1%
+- Learned local nucleotide relationships using embedding representations.
+
+Overall finding:
+Human start-site prediction remains difficult due to weak motifs, alternative start sites, and annotation uncertainty.
+
+
+Bacterial Genome Experiments
+----------------------------
+
+Dataset: Escherichia coli MG1655
+Window size: 401 bp
+Balanced dataset: 4340 positive / 4340 negative examples.
+
+Logistic Regression
+- Test Accuracy: 88.9%
+
+Random Forest
+- Test Accuracy: 88.0%
+
+Convolutional Neural Network
+- Test Accuracy: 95–96%
+- Confusion matrix showed ~820 correct predictions per class with ~48 errors.
+
+Interpretation:
+Bacterial genomes contain strong conserved motifs such as the Shine-Dalgarno sequence,
+making translation start-site prediction a highly learnable classification problem.
+
+
+Comparative Insight
+-------------------
+
+Across all models, bacterial prediction performance was substantially higher than human prediction performance.
+
+This suggests that genome structure — including motif strength, gene compactness, and annotation clarity —
+fundamentally constrains achievable machine learning accuracy.
