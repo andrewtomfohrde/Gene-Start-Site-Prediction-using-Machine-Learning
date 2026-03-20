@@ -1,106 +1,144 @@
-# Machine Learning for Translation Start-Site Prediction
+🧬 Machine Learning for Translation Start-Site Prediction
+Project Overview
 
 This project investigates how genome structure affects the ability of machine learning models to predict gene translation start sites.
 
-We compare performance across **human (eukaryotic)** and **bacterial (prokaryotic)** genomes using both traditional machine learning models and deep learning approaches.
+We compare model performance across:
 
----
+Human genome (eukaryotic — complex structure)
 
-## Project Overview
+Bacterial genome (prokaryotic — strong sequence signals)
 
-Correctly identifying gene start sites is important for genome annotation and understanding protein synthesis.
+The goal is to understand:
 
-This project explores:
+Whether start-site prediction is a learnable sequence classification task
 
-- Whether start-site prediction is a learnable sequence classification problem
-- How genome complexity impacts prediction performance
-- Differences between human and bacterial genomic signals
+How biological complexity impacts achievable prediction accuracy
 
-We trained multiple models on extracted DNA sequence windows centered around annotated start codons.
+How traditional ML models compare to deep learning approaches
 
----
+📊 Datasets
+Human Genome (RefSeq GRCh38)
 
-## Datasets
+Source: NCBI RefSeq
 
-### Human Genome (RefSeq GRCh38)
+Files used:
 
-- Source: NCBI RefSeq
-- Files used:
-  - `*_feature_table.txt` → used to obtain protein-coding gene start coordinates
-  - `*_genomic.fna` → raw DNA sequence
-- Window size: **300 bp**
-- Balanced dataset created using positive gene starts and sampled negative regions
+feature_table.txt → gene start coordinates
+genomic.fna → raw DNA sequence
 
-### Bacterial Genome (E. coli MG1655)
+Processing steps:
 
-- Window size: **401 bp**
-- Improved negative sampling:
-  - Genome scanned for ATG / GTG / TTG codons
-  - Annotated starts removed
-  - Only valid upstream context retained
-- Final dataset:
-  - **4340 positive**
-  - **4340 negative**
+Extracted 300 bp DNA windows centered on annotated start sites (positive samples)
 
----
+Sampled genomic regions away from annotated starts to create negative samples
 
-## Models Tested
+Constructed a balanced dataset (~46k windows)
 
-Human Genome:
+Bacterial Genome (E. coli MG1655)
 
-- Logistic Regression (one-hot encoding)
-- Random Forest (k-mer frequency features)
-- XGBoost
-- Multilayer Perceptron
-- 1D Convolutional Neural Network
+Processing steps:
 
-Bacterial Genome:
+Extracted 401 bp windows centered on ATG / GTG / TTG start codons
 
-- Logistic Regression
-- Random Forest
-- 1D Convolutional Neural Network
+Removed annotated starts for negative sampling
 
----
+Retained only windows with valid upstream context
 
-## Key Results
+Final dataset:
 
-### Human Genome
+4340 positive samples
+4340 negative samples
+🤖 Models Tested
 
-| Model | Test Accuracy |
-|------|---------------|
-| Logistic Regression | 56.5% |
-| Random Forest | 60.4% |
-| XGBoost | 58.8% |
-| MLP | 57.5% |
-| CNN | 57.1% |
+We evaluated multiple machine learning approaches:
 
-Prediction performance remained limited due to:
+Baseline Models
 
-- weak local motifs
-- alternative start sites
-- annotation uncertainty
-- complex gene structure
+Logistic Regression (one-hot encoding)
 
----
+Logistic Regression (k-mer features)
 
-### Bacterial Genome
+Tree-Based Models
 
-| Model | Test Accuracy |
-|------|---------------|
-| Logistic Regression | 88.9% |
-| Random Forest | 88.0% |
-| CNN | **95–96%** |
+Random Forest
 
-CNN models likely learned conserved signals such as the **Shine-Dalgarno motif** and fixed spacing upstream of start codons.
+XGBoost
 
----
+Neural Models
 
-## Conclusion
+Multilayer Perceptron (MLP)
 
-Translation start-site prediction is significantly easier in bacterial genomes due to strong conserved sequence signals and compact gene structure.
+1D Convolutional Neural Network (CNN)
 
-Human gene start prediction is fundamentally constrained by biological complexity rather than model capacity.
+📈 Key Results
+Human Genome
+Model	Test Accuracy
+Logistic Regression	~56.5%
+Random Forest	~60.4%
+XGBoost	~58.8%
+CNN	~57.1%
 
----
+Results indicate:
 
-## Repository Structure (Suggested)
+Weak sequence signals near start sites
+
+Model complexity provides limited performance gains
+
+Bacterial Genome
+Model	Test Accuracy
+Logistic Regression	~88.9%
+Random Forest	~88.0%
+CNN	95–96%
+
+CNN achieved:
+
+High precision and recall
+
+Minimal overfitting
+
+Learned Shine-Dalgarno motif spacing patterns
+
+🧪 How to Run the Pipeline
+1. Extract gene start coordinates
+python extract_protein_coding_starts.py feature_table.txt protein_coding_starts.txt
+2. Generate positive DNA windows
+python extract_windows.py genome.fna protein_coding_starts.txt 300 positive_windows.fna
+3. Generate negative DNA windows
+python extract_negative_windows.py genome.fna protein_coding_starts.txt 300 negative_windows.fna
+4. Build training dataset
+python make_training_dataset.py positive_windows.fna negative_windows.fna training_dataset.csv
+5. Train baseline model
+python train_logreg_baseline.py training_dataset.csv
+📁 Project Structure
+project/
+
+data/
+    genome_raw/
+    windows/
+    training_dataset.csv
+
+scripts/
+    extract_windows.py
+    extract_negative_windows.py
+    make_training_dataset.py
+    train_logreg_baseline.py
+
+models/
+    cnn_start_predictor.h5
+
+notebooks/
+    model_testing.ipynb
+
+results/
+    human_results.txt
+    bacterial_results.txt
+🧠 Conclusion
+
+Start-site prediction is strongly influenced by genome structure.
+
+Bacterial genomes contain strong conserved motifs → highly learnable
+
+Human genomes contain weak local signals and annotation uncertainty → lower achievable accuracy
+
+This suggests biological variability, not model capacity, is the main limiting factor.
